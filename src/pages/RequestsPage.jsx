@@ -192,7 +192,7 @@ const RequestsPage = () => {
                       id,
                       time,
                       date,
-                      requestBy: author,
+                      requestedBy: author,
                       reason,
                       isApproved,
                       isRejected,
@@ -220,7 +220,7 @@ const RequestsPage = () => {
                         <TableCell align="left">{reason}</TableCell>
 
                         <TableCell align="left">{time}</TableCell>
-                        <TableCell align="left">{date}</TableCell>
+                        <TableCell align="left">{date.toLocaleString().split(",")[0]}</TableCell>
 
                         {/* <TableCell align="left">
                           <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>

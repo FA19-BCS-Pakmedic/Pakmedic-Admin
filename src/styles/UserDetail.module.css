@@ -1,0 +1,113 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.pmc {
+  padding: 5px;
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.ratings {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.name {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.speciality {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.info-icon {
+  margin-right: 8px;
+}
+
+.info-label {
+  font-size: 16px;
+  margin-right: 16px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.treatments {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 16px;
+}
+
+.treatment {
+  background-color: #e0e0e0;
+  color: #424242;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  margin-right: 8px;
+}
+
+.experiences {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.experience {
+  width: 80%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+.experience-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.experience-hospital {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.experience-date {
+  font-size: 14px;
+  font-weight: 400;
+  color: #757575;
+}

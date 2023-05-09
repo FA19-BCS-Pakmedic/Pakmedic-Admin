@@ -177,7 +177,7 @@ const ComplaintsPage = () => {
             <Typography id="modal-modal-title" variant="h2" component="h2">
               Complaint
             </Typography>
-            <Typography variant="secondary" color="GrayText" sx={{ mt: 1 }}>
+            <Typography variant="secondary" color="GrayText" sx={{ mt: 2 }}>
               {`Ticket#${selectedComplaint?.ticketNumber}`}
             </Typography>
 

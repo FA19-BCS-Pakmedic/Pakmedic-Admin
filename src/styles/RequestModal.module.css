@@ -1,0 +1,26 @@
+.modalContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 150px;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  .statusContainer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .control {
+    width: 100%;
+    color: #fff;
+  }

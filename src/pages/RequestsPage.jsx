@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 
+
+
 import {
   Card,
   Table,
@@ -36,6 +38,8 @@ import Scrollbar from '../components/scrollbar';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 import REQUESTS from '../_mock/appointmentReq';
+
+import classes from '../styles/RequestModal.module.css'
 
 const TABLE_HEAD = [
   { id: 'author', label: 'Requested By', alignRight: false },
@@ -92,10 +96,10 @@ const RequestsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   const handleOpenMenu = (event, row) => {
-    setSelectedComplaint(row);
+    setSelectedRequest(row);
     setOpen(event.currentTarget);
   };
 
@@ -152,7 +156,99 @@ const RequestsPage = () => {
 
   const isNotFound = !filteredComplaints.length && !!filterName;
 
-  const openModal = () => {};
+  const openModal = () => {
+    return(
+  <Modal
+        open={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+      >
+        <Container
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'fit-content',
+          }}
+        >
+          <Box sx={style} className={classes.modalContainer}>
+
+          <Typography id="modal-modal-title" variant="h2" component="h2">
+              Request
+            </Typography>
+
+            <Container>
+            <div className={classes.statusContainer}>
+                <Typography variant="h6">Requested By</Typography>
+                <Label
+                  style={{
+                    backgroundColor: `
+                    ${
+                      !selectedRequest?.isApprove && selectedRequest?.isReject
+                        ? '#F86D6D'
+                        : !selectedRequest?.isApprove && !selectedRequest?.isReject
+                        ? '#F8B76D'
+                        : '#6DD17F'
+                    }
+                    `,
+                    color: '#fff',
+                  }}
+                >
+                  {selectedRequest?.isApprove ? 'Approved' : selectedRequest?.isReject ? 'Rejected' : 'Pending'}
+                </Label>
+              </div>
+              <Typography variant="p">{selectedRequest?.requestedBy}</Typography>
+
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Typography variant="h6">Request Type</Typography>
+              <Typography variant="p">{selectedRequest?.requestType}</Typography>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Typography variant="h6">Reason</Typography>
+              <Typography variant="p">{selectedRequest?.reason}</Typography>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Typography variant="h6">Reason Details</Typography>
+              <Typography variant="p">{selectedRequest?.reasonDetails}</Typography>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Button
+                    variant="contained"
+                    style={{ background: '#F86D6D' }}
+                    onClick={() => setIsModalOpen(false)}
+                    className={classes.control}
+                  >
+                    Reject
+                  </Button>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Button
+                    variant="contained"
+                    style={{ background: '#6DD17F' }}
+                    onClick={() => setIsModalOpen(false)}
+                    className={classes.control}
+                  >
+                    Approve
+                  </Button>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
+        </Container>
+      </Modal>)
+
+
+  };
 
   return (
     <>
@@ -222,6 +318,26 @@ const RequestsPage = () => {
                         <TableCell align="left">{time}</TableCell>
                         <TableCell align="left">{date.toLocaleString().split(",")[0]}</TableCell>
 
+
+                        <TableCell align="left">
+                        <Label
+                  style={{
+                    backgroundColor: `
+                    ${
+                      !selectedRequest?.isApprove && selectedRequest?.isReject
+                        ? '#F86D6D'
+                        : !selectedRequest?.isApprove && !selectedRequest?.isReject
+                        ? '#F8B76D'
+                        : '#6DD17F'
+                    }
+                    `,
+                    color: '#fff',
+                  }}
+                >
+                  {selectedRequest?.isApprove ? 'Approved' : selectedRequest?.isReject ? 'Rejected' : 'Pending'}
+                </Label>
+
+                        </TableCell>
                         {/* <TableCell align="left">
                           <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
                         </TableCell> */}

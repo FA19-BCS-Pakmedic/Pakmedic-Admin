@@ -12,20 +12,20 @@ const appointmentReqs = [...Array(24)].map((_, index) => ({
   reason: faker.lorem.sentence(5),
   reasonDetails: faker.lorem.sentence(100),
   createdAt: faker.date.past(),
-  isApproved: false,
-  isRejected: false,
+  isApproved: faker.datatype.boolean(),
+  isRejected: faker.datatype.boolean(),
 }));
 
 
 
-const TABLE_HEAD = [
-  { id: 'author', label: 'Requested By', alignRight: false },
-  { id: 'type', label: 'Type', alignRight: false },
-  { id: 'reason', label: 'Reason', alignRight: false },
-  { id: 'time', label: 'Selected Time', alignRight: false },
-  { id: 'date', label: 'Selected Date', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-];
+// const TABLE_HEAD = [
+//   { id: 'author', label: 'Requested By', alignRight: false },
+//   { id: 'type', label: 'Type', alignRight: false },
+//   { id: 'reason', label: 'Reason', alignRight: false },
+//   { id: 'time', label: 'Selected Time', alignRight: false },
+//   { id: 'date', label: 'Selected Date', alignRight: false },
+//   { id: 'status', label: 'Status', alignRight: false },
+// ];
 
 
 export default appointmentReqs;

@@ -11,7 +11,8 @@ import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import UserDetailsPage from './pages/UserDetailsPage';
 import ComplaintsPage from './pages/ComplaintsPage';
-import RequestsPage from './pages/RequestsPage'
+import RequestsPage from './pages/RequestsPage';
+import SupportCommsPage from './pages/SupportCommsPage';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +29,8 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'user-details/:id', element: <UserDetailsPage /> },
         { path: 'complaints', element: <ComplaintsPage /> },
-        { path: 'appointment-requests', element: <RequestsPage />}
+        { path: 'appointment-requests', element: <RequestsPage />},
+        {path: 'support-communities', element: <SupportCommsPage />},
       ],
     },
     {

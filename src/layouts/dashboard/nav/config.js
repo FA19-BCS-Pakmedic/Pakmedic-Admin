@@ -26,16 +26,11 @@ const navConfig = [
     path: '/dashboard/appointment-requests',
     icon: icon('ic_appointment'),
   },
-  // {
-  //   title: 'product',
-  //   path: '/dashboard/products',
-  //   icon: icon('ic_cart'),
-  // },
-  // {
-  //   title: 'blog',
-  //   path: '/dashboard/blog',
-  //   icon: icon('ic_blog'),
-  // },
+  {
+    title: 'support communities',
+    path: '/dashboard/support-communities',
+    icon: icon('ic_community'),
+  },
   {
     title: 'login',
     path: '/login',

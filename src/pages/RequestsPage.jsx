@@ -86,7 +86,7 @@ const RequestsPage = () => {
 
   const [order, setOrder] = useState('asc');
 
-  const [selected, setSelected] = useState([]);
+  // const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('complaineeName');
 
@@ -112,14 +112,14 @@ const RequestsPage = () => {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = REQUESTS.map((n) => n.complaineeName);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  // const handleSelectAllClick = (event) => {
+  //   if (event.target.checked) {
+  //     const newSelecteds = REQUESTS.map((n) => n.complaineeName);
+  //     setSelected(newSelecteds);
+  //     return;
+  //   }
+  //   setSelected([]);
+  // };
 
   // const handleClick = (event, complaineeName) => {
   //   const selectedIndex = selected.indexOf(complaineeName);

@@ -1,0 +1,15 @@
+
+.modalContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    max-width: 600px !important;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 400px;
+    max-height: 90vh;
+    overflow: auto;
+  }

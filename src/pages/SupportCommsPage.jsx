@@ -120,9 +120,11 @@ const SupportCommsPage = () => {
 
   const [selectedCommunity, setSelectedCommunity] = useState(null);
 
-
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
 
 
   const handleInputChange = (event) => {
@@ -133,8 +135,6 @@ const SupportCommsPage = () => {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
       addKeyword();
-    } else if (event.key === 'Backspace' && currentTag === '') {
-      removeLastKeyword();
     }
   };
 
@@ -152,6 +152,40 @@ const SupportCommsPage = () => {
   const removeLastKeyword = () => {
     setTags((prevKeywords) => prevKeywords.slice(0, -1));
   };
+
+
+  const createCommunity = async() => {
+    const data = {
+      name,
+      tags,
+      description
+    }
+
+    console.log(data);
+  }
+
+
+  const updateCommunity = async() => {
+    const data = {
+      name,
+      tags,
+      description,
+      totalMember: selectedCommunity.totalMember
+    }
+    console.log(data);
+  } 
+
+
+
+  useEffect(() => {
+    if(!isModalOpen) {
+      setSelectedCommunity(null);
+    }
+  }, [isModalOpen])
+
+  const closeCommunityModal = () => {
+    setIsModalOpen(false);
+  }
 
 
   const openCommunityModal = () => {
@@ -177,14 +211,16 @@ const SupportCommsPage = () => {
             </Typography>
 
 
-            <Container sx={{ mt: 2 }}>
-              <Typography variant="h6">Community Name</Typography>
+            <Container sx={{ mt: 2 }} >
+              <Typography variant="h6" sx={{mb: 1}}>Community Name</Typography>
               {/* <Typography variant="p">{selectedRequest?.requestType}</Typography> */}
               <TextField 
                 id="outlined-basic"
                 label="Enter community name"
                 variant="outlined"
                 fullWidth
+                onChange={(e) => {setName(e.target.value)}}
+                value={name}
                 // value={selectedRequest?.requestType}
                 // onChange={(e) => {
                 //   setSelectedRequest({
@@ -198,53 +234,78 @@ const SupportCommsPage = () => {
 
             <Container sx={{ mt: 2 }}>
               {/* input to add multiple tags */}
-              <Typography variant="h6">Tags</Typography>
+              <Typography variant="h6" sx={{mb: 1}}>Tags</Typography>
               <TextField
                 id="outlined-basic"
-                label="Enter tags separated by spaces"
-                variant="outlined"
-                fullWidth
-                // value={selectedRequest?.requestType}
-                // onChange={(e) => {
-                //   setSelectedRequest({
-                //     ...selectedRequest,
-                //     requestType: e.target.value,
-                //   });
-                // }}
-              />
-            </Container>
-
-            <Container sx={{ mt: 2 }}>
-              {/* input to add multiple tags */}
-              <Typography variant="h6">Description</Typography>
-              <TextField
-                id="outlined-basic"
-                label="Enter description of community"
+                label="Enter a tag and press enter"
                 variant="outlined"
                 fullWidth
                 value={currentTag}
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
-
-                // value={selectedRequest?.requestType}
-                // onChange={(e) => {
-                //   setSelectedRequest({
-                //     ...selectedRequest,
-                //     requestType: e.target.value,
-                //   });
-                // }}
+                
               />
 
-<div>
+<div className={classes.tagsContainer}>
         {tags.map((tag, index) => (
-          <div key={index} className="keyword-capsule">
+          <div key={index} className={classes.tag}>
             {tag}
-            <span className="remove-button" onClick={() => removeKeyword(tag)}>
+            <button className={classes.removeButton} onClick={() => removeKeyword(tag)}>
               &times;
-            </span>
+            </button>
           </div>
         ))}
       </div>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              {/* input to add multiple tags */}
+              <Typography variant="h6" sx={{mb: 1}}>Description</Typography>
+              <TextareaAutosize
+                aria-label="minimum height"
+                minRows={5}
+                placeholder="Write community description"
+                className={classes.descriptionInput}
+                value={description}
+                onChange={(e) => {setDescription(e.target.value)}}
+              /> 
+            </Container>
+
+            {/* Controls */}
+            <Container sx={{ mt: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Button
+                    variant="contained"
+                    style={{ background: '#F86D6D' }}
+                    onClick={() => setIsModalOpen(false)}
+                    className={classes.control}
+                  >
+                    Cancel
+                  </Button>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  { selectedCommunity ? 
+                  (
+                    <Button
+                      variant="contained"
+                      style={{background: '#6DD17F'}}
+                      onClick={() => updateCommunity()}
+                      className={classes.control}
+                    >
+                      Update
+                    </Button>
+                  ):( <Button
+                    variant="contained"
+                    style={{ background: '#6DD17F' }}
+                    onClick={() => createCommunity()}
+                    className={classes.control}
+                  >
+                    Create
+                  </Button>)}
+                </Grid>
+              </Grid>
             </Container>
 
           </Box>
@@ -253,8 +314,6 @@ const SupportCommsPage = () => {
       </Modal>
     )
   }
-
-
 
   useEffect(() => {
     fetchData(
@@ -270,20 +329,6 @@ const SupportCommsPage = () => {
       }
     }, [data]);
 
-    useEffect(() => {
-        console.log(filterName);
-    }, [filterName])
-
-    const onBlur = () => {
-
-      if(filterName) {
-        const query = `name=${filterName}`;
-        setQuery(query);
-      }else {
-        setQuery(null);
-      }
-
-    }
 
     const handleRequestSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
@@ -342,14 +387,27 @@ const SupportCommsPage = () => {
   }
 
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, community) => {
     setOpen(event.currentTarget);
+    setSelectedCommunity(community);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
 
+  useEffect(() => {
+    // console.log(selectedCommunity);
+    if(selectedCommunity) {
+      setName(selectedCommunity.name);
+      setTags(selectedCommunity.tags);
+      setDescription(selectedCommunity.description);
+    }else {
+      setName('');
+      setTags([]);
+      setDescription('');
+    }
+  }, [selectedCommunity])
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - communities?.length) : 0;
 
@@ -372,10 +430,10 @@ const SupportCommsPage = () => {
         {openCommunityModal()}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Communities
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setIsModalOpen(true)}> 
-            New User
+            New Community
           </Button>
         </Stack>
 
@@ -427,7 +485,10 @@ const SupportCommsPage = () => {
                         </TableCell> */}
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(
+                            event,
+                            row
+                          )}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -450,7 +511,7 @@ const SupportCommsPage = () => {
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" paragraph>
+                          <Typography variant="h6" sx={{mb: 1}} paragraph>
                             Not found
                           </Typography>
 
@@ -498,7 +559,10 @@ const SupportCommsPage = () => {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => {
+          setIsModalOpen(true);
+          setOpen(null);
+        }}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>

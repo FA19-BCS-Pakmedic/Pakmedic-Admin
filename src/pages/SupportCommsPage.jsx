@@ -25,6 +25,7 @@ import {
   Grid,
   TextareaAutosize,
   TextField,
+  CircularProgress,
 } from '@mui/material';
 
 import { style } from '@mui/system';
@@ -41,11 +42,12 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import {useApi} from '../hooks/useApi';
 
 import {
-  getCommunities, createCommunity
+  getCommunities, createCommunity, updateCommunity, deleteCommunity
 } from '../utils/api';
 
 
 import classes from '../styles/CommunityModal.module.css';
+import ConfirmationModal from '../components/confirmation-modal/ConfirmationModal';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -87,10 +89,6 @@ function applySortFilter(array, comparator, query) {
 }
 
 
-
-
-
-
 const SupportCommsPage = () => {
 
   const {
@@ -118,7 +116,11 @@ const SupportCommsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
   const [selectedCommunity, setSelectedCommunity] = useState(null);
+
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
 
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
@@ -149,33 +151,30 @@ const SupportCommsPage = () => {
     setTags((prevKeywords) => prevKeywords.filter((kw) => kw !== keyword));
   };
 
-  const removeLastKeyword = () => {
-    setTags((prevKeywords) => prevKeywords.slice(0, -1));
-  };
 
 
-  const createCommunity = async() => {
+  const communityOperation = async() => {
     const data = {
       name,
       tags,
       description
     }
+    setIsBtnLoading(true);
+    try {
 
-    console.log(data);
-  }
-
-
-  const updateCommunity = async() => {
-    const data = {
-      name,
-      tags,
-      description,
-      totalMember: selectedCommunity.totalMember
+      const response = 
+      selectedCommunity ?
+        await updateCommunity(data, selectedCommunity._id)
+        :
+        await createCommunity(data)
+        closeCommunityModal();
+        fetch();
+    } catch(err) {
+      console.log(err);
+    }finally {
+      setIsBtnLoading(false);
     }
-    console.log(data);
-  } 
-
-
+  }
 
   useEffect(() => {
     if(!isModalOpen) {
@@ -183,7 +182,9 @@ const SupportCommsPage = () => {
     }
   }, [isModalOpen])
 
+
   const closeCommunityModal = () => {
+    if(isBtnLoading) return;
     setIsModalOpen(false);
   }
 
@@ -192,9 +193,7 @@ const SupportCommsPage = () => {
     return (
 <Modal
         open={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
+        onClose={closeCommunityModal}
       >
         <Container
           sx={{
@@ -213,7 +212,6 @@ const SupportCommsPage = () => {
 
             <Container sx={{ mt: 2 }} >
               <Typography variant="h6" sx={{mb: 1}}>Community Name</Typography>
-              {/* <Typography variant="p">{selectedRequest?.requestType}</Typography> */}
               <TextField 
                 id="outlined-basic"
                 label="Enter community name"
@@ -221,16 +219,8 @@ const SupportCommsPage = () => {
                 fullWidth
                 onChange={(e) => {setName(e.target.value)}}
                 value={name}
-                // value={selectedRequest?.requestType}
-                // onChange={(e) => {
-                //   setSelectedRequest({
-                //     ...selectedRequest,
-                //     requestType: e.target.value,
-                //   });
-                // }}
               />
             </Container>
-
 
             <Container sx={{ mt: 2 }}>
               {/* input to add multiple tags */}
@@ -246,16 +236,16 @@ const SupportCommsPage = () => {
                 
               />
 
-<div className={classes.tagsContainer}>
-        {tags.map((tag, index) => (
-          <div key={index} className={classes.tag}>
-            {tag}
-            <button className={classes.removeButton} onClick={() => removeKeyword(tag)}>
-              &times;
-            </button>
-          </div>
-        ))}
-      </div>
+              <div className={classes.tagsContainer}>
+                  {tags.map((tag, index) => (
+                    <div key={index} className={classes.tag}>
+                      {tag}
+                      <button className={classes.removeButton} onClick={() => removeKeyword(tag)}>
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
             </Container>
 
             <Container sx={{ mt: 2 }}>
@@ -291,17 +281,19 @@ const SupportCommsPage = () => {
                     <Button
                       variant="contained"
                       style={{background: '#6DD17F'}}
-                      onClick={() => updateCommunity()}
+                      onClick={communityOperation}
                       className={classes.control}
                     >
+                    {isBtnLoading && <CircularProgress size={12} color="inherit"/>}
                       Update
                     </Button>
                   ):( <Button
                     variant="contained"
                     style={{ background: '#6DD17F' }}
-                    onClick={() => createCommunity()}
+                    onClick={() => communityOperation()}
                     className={classes.control}
                   >
+                    {isBtnLoading && <CircularProgress size={12} color="inherit"/>}
                     Create
                   </Button>)}
                 </Grid>
@@ -315,13 +307,18 @@ const SupportCommsPage = () => {
     )
   }
 
-  useEffect(() => {
+
+  const fetch = () => {
     fetchData(
       () => {
         return getCommunities(query)
       }
     );
-  }, [query])
+  }
+
+  useEffect(() => {
+    fetch();
+  }, [])
 
     useEffect(() => {
       if(data) {
@@ -386,6 +383,19 @@ const SupportCommsPage = () => {
     return tagString;
   }
 
+  const handleDelete = async() => {
+    setIsBtnLoading(true);
+    try {
+      await deleteCommunity(selectedCommunity._id);
+      setIsConfirmOpen(false);
+      fetch();
+    } catch(err) {
+      console.log(err);
+    }finally{
+      setIsBtnLoading(false);
+    }
+  }
+
 
   const handleOpenMenu = (event, community) => {
     setOpen(event.currentTarget);
@@ -397,7 +407,6 @@ const SupportCommsPage = () => {
   };
 
   useEffect(() => {
-    // console.log(selectedCommunity);
     if(selectedCommunity) {
       setName(selectedCommunity.name);
       setTags(selectedCommunity.tags);
@@ -406,6 +415,7 @@ const SupportCommsPage = () => {
       setName('');
       setTags([]);
       setDescription('');
+      setCurrentTag('');
     }
   }, [selectedCommunity])
 
@@ -421,6 +431,13 @@ const SupportCommsPage = () => {
 
   return (
     <>
+
+      <ConfirmationModal 
+        isOpen={isConfirmOpen}
+        setIsOpen={setIsConfirmOpen}
+        onClickConfirm={handleDelete}
+        isBtnLoading={isBtnLoading}
+      />
 
       <Helmet>
         <title> User | Minimal UI </title>
@@ -567,7 +584,10 @@ const SupportCommsPage = () => {
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }}>
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => {
+          setIsConfirmOpen(true)
+          setOpen(null);
+          }}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete
         </MenuItem>

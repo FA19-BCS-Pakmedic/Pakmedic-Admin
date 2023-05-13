@@ -17,6 +17,10 @@ export const getCommunityById = (id) => api.get(`communities/${id}`);
 
 export const createCommunity = (data) => api.post('communities', data);
 
+export const updateCommunity = (data, id) => api.patch(`communities/${id}`, data);
+
+export const deleteCommunity = (id) => api.delete(`communities/${id}`);
+
 
 export const getAppointmentRequests = (query) => api.get(`/appointment/requests/${query ? `?${query}` : ``}`);
 

@@ -26,6 +26,7 @@ import {
   Modal,
   Box,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 import { style } from '@mui/system';
 
@@ -36,11 +37,12 @@ import Scrollbar from '../components/scrollbar';
 
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
-import REQUESTS from '../_mock/appointmentReq';
+// import REQUESTS from '../_mock/appointmentReq';
 
 import classes from '../styles/RequestModal.module.css'
 import { useApi } from '../hooks/useApi';
 import { getAppointmentRequests, updateAppointmentRequest } from '../utils/api';
+import {fDate} from '../utils/formatTime'
 import Loading from '../components/loading/Loading';
 import Error from '../components/error/Error';
 
@@ -86,7 +88,7 @@ function applySortFilter(array, comparator, query) {
 const RequestsPage = () => {
 
   const {
-    data: appointmentRequests, error, isLoading, refetch: fetchData
+    data: requests, error, isLoading, refetch: fetchData
   } = useApi();
 
   const [open, setOpen] = useState(null);
@@ -109,21 +111,40 @@ const RequestsPage = () => {
 
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  const [REQUESTS, setREQUESTS] = useState([]);
+
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
 
 
+  const handleUpdate = async (isApproved, isRejected) => {
+    const data = {
+      ...selectedRequest,
+      isApproved,
+      isRejected
+    }
+    setIsBtnLoading(true);
+    try {
 
-  const handleApprove = async () => {
-    
+      const res = await updateAppointmentRequest(data._id, data);
+      
+        fetch();
+      
+    }catch(err) {
+      console.log(err);
+    } finally {
+      setIsBtnLoading(false);
+      closeModal();
+    }
   }
 
-  const handleReject = async () => {
-
-  }
+  useEffect(() => {console.log(REQUESTS)}, [REQUESTS])
 
 
   useEffect(() => {
-    console.log(appointmentRequests);
-  }, [appointmentRequests])
+    console.log(requests);
+    if(requests && requests.status === 'success')
+      setREQUESTS(requests.data.data)
+  }, [requests]);
 
   const fetch = () => {
     fetchData(
@@ -152,30 +173,6 @@ const RequestsPage = () => {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
-  // const handleSelectAllClick = (event) => {
-  //   if (event.target.checked) {
-  //     const newSelecteds = REQUESTS.map((n) => n.complaineeName);
-  //     setSelected(newSelecteds);
-  //     return;
-  //   }
-  //   setSelected([]);
-  // };
-
-  // const handleClick = (event, complaineeName) => {
-  //   const selectedIndex = selected.indexOf(complaineeName);
-  //   let newSelected = [];
-  //   if (selectedIndex === -1) {
-  //     newSelected = newSelected.concat(selected, complaineeName);
-  //   } else if (selectedIndex === 0) {
-  //     newSelected = newSelected.concat(selected.slice(1));
-  //   } else if (selectedIndex === selected.length - 1) {
-  //     newSelected = newSelected.concat(selected.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-  //   }
-  //   setSelected(newSelected);
-  // };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -230,9 +227,9 @@ const RequestsPage = () => {
                   style={{
                     backgroundColor: `
                     ${
-                      !selectedRequest?.isApprove && selectedRequest?.isReject
+                      !selectedRequest?.isApproved && selectedRequest?.isRejected
                         ? '#F86D6D'
-                        : !selectedRequest?.isApprove && !selectedRequest?.isReject
+                        : !selectedRequest?.isApproved && !selectedRequest?.isRejected
                         ? '#F8B76D'
                         : '#6DD17F'
                     }
@@ -240,10 +237,10 @@ const RequestsPage = () => {
                     color: '#fff',
                   }}
                 >
-                  {selectedRequest?.isApprove ? 'Approved' : selectedRequest?.isReject ? 'Rejected' : 'Pending'}
+                  {selectedRequest?.isApproved ? 'Approved' : selectedRequest?.isRejected ? 'Rejected' : 'Pending'}
                 </Label>
               </div>
-              <Typography variant="p">{selectedRequest?.requestedBy}</Typography>
+              <Typography variant="p">{selectedRequest?.requestedBy.name || "-"}</Typography>
 
             </Container>
 
@@ -259,7 +256,17 @@ const RequestsPage = () => {
 
             <Container sx={{ mt: 2 }}>
               <Typography variant="h6">Reason Details</Typography>
-              <Typography variant="p">{selectedRequest?.reasonDetails}</Typography>
+              <Typography variant="p">{selectedRequest?.reasonDetails || '-'}</Typography>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Typography variant="h6">New Selected Time</Typography>
+              <Typography variant="p">{selectedRequest?.time || '-'}</Typography>
+            </Container>
+
+            <Container sx={{ mt: 2 }}>
+              <Typography variant="h6">New Selected Date</Typography>
+              <Typography variant="p">{fDate(selectedRequest?.date) || '-'}</Typography>
             </Container>
 
             <Container sx={{ mt: 2 }}>
@@ -268,9 +275,12 @@ const RequestsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#F86D6D' }}
-                    onClick={handleReject}
+                    onClick={() => handleUpdate(false, true)}
                     className={classes.control}
+                    disabled={isBtnLoading || selectedRequest?.isApproved || selectedRequest?.isRejected}
                   >
+
+                    {isBtnLoading && <CircularProgress size={12} color="inherit" sx={{marginRight: 2}}/>}
                     Reject
                   </Button>
                 </Grid>
@@ -279,9 +289,11 @@ const RequestsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#6DD17F' }}
-                    onClick={handleApprove}
+                    onClick={() => handleUpdate(true, false)}
                     className={classes.control}
+                    disabled={isBtnLoading || selectedRequest?.isApproved || selectedRequest?.isRejected}
                   >
+                    {isBtnLoading && <CircularProgress size={12} color="inherit" sx={{marginRight: 2}}/>}
                     Approve
                   </Button>
                 </Grid>
@@ -334,7 +346,7 @@ const RequestsPage = () => {
                 <TableBody>
                   {filteredComplaints.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const {
-                      id,
+                      _id,
                       time,
                       date,
                       requestedBy: author,
@@ -346,7 +358,7 @@ const RequestsPage = () => {
                     // const selectedUser = selected.indexOf(complaineeName) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox">
+                      <TableRow hover key={_id} tabIndex={-1} role="checkbox">
                         <TableCell padding="checkbox">
                           {/* <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, complaineeName)} /> */}
                         </TableCell>
@@ -355,7 +367,7 @@ const RequestsPage = () => {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar alt={complaineeName} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {author}
+                              {author.name ? author.name : "-"}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -365,7 +377,7 @@ const RequestsPage = () => {
                         <TableCell align="left">{reason}</TableCell>
 
                         <TableCell align="left">{time}</TableCell>
-                        <TableCell align="left">{date.toLocaleString().split(",")[0]}</TableCell>
+                        <TableCell align="left">{fDate(date)}</TableCell>
 
 
                         <TableCell align="left">
@@ -373,9 +385,9 @@ const RequestsPage = () => {
                   style={{
                     backgroundColor: `
                     ${
-                      !selectedRequest?.isApprove && selectedRequest?.isReject
+                      !isApproved && isRejected
                         ? '#F86D6D'
-                        : !selectedRequest?.isApprove && !selectedRequest?.isReject
+                        : !isApproved && !isRejected
                         ? '#F8B76D'
                         : '#6DD17F'
                     }
@@ -383,7 +395,7 @@ const RequestsPage = () => {
                     color: '#fff',
                   }}
                 >
-                  {selectedRequest?.isApprove ? 'Approved' : selectedRequest?.isReject ? 'Rejected' : 'Pending'}
+                  {isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending'}
                 </Label>
 
                         </TableCell>

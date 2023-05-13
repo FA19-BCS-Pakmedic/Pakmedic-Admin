@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 
-export const getCommunities = (query) => api.get(`communities/${query ? `?${query}` : ``}`);
+export const getCommunities = (query) => api.get(`communities${query ? `?${query}` : ``}`);
 
 export const getCommunityById = (id) => api.get(`communities/${id}`);
 
@@ -22,14 +22,14 @@ export const updateCommunity = (data, id) => api.patch(`communities/${id}`, data
 export const deleteCommunity = (id) => api.delete(`communities/${id}`);
 
 
-export const getAppointmentRequests = (query) => api.get(`/appointment/requests/${query ? `?${query}` : ``}`);
+export const getAppointmentRequests = (query) => api.get(`/appointments/requests${query ? `?${query}` : ``}`);
 
-export const getAppointmentRequestById = (id) => api.get(`/appointment/requests/${id}`);
+export const getAppointmentRequestById = (id) => api.get(`/appointments/requests/${id}`);
 
-export const updateAppointmentRequest = (id, data) => api.patch(`/appointment/requests/${id}`, data);
+export const updateAppointmentRequest = (id, data) => api.patch(`/appointments/requests/${id}`, data);
 
 
-export const getComplaints = (query) => api.get(`/complaints/${query ? `?${query}` : ``}`);
+export const getComplaints = (query) => api.get(`/complaints${query ? `?${query}` : ``}`);
 
 export const getComplaintById = (id) => api.get(`/complaints/${id}`);
 

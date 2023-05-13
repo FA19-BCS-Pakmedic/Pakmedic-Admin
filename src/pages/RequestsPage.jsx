@@ -26,7 +26,6 @@ import {
   Modal,
   Box,
   Grid,
-  TextareaAutosize,
 } from '@mui/material';
 import { style } from '@mui/system';
 
@@ -40,6 +39,11 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import REQUESTS from '../_mock/appointmentReq';
 
 import classes from '../styles/RequestModal.module.css'
+import { useApi } from '../hooks/useApi';
+import { getAppointmentRequests, updateAppointmentRequest } from '../utils/api';
+import Loading from '../components/loading/Loading';
+import Error from '../components/error/Error';
+
 
 const TABLE_HEAD = [
   { id: 'author', label: 'Requested By', alignRight: false },
@@ -80,11 +84,18 @@ function applySortFilter(array, comparator, query) {
 }
 
 const RequestsPage = () => {
+
+  const {
+    data: appointmentRequests, error, isLoading, refetch: fetchData
+  } = useApi();
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
+
+  const [query, setQuery] = useState(null);
 
   // const [selected, setSelected] = useState([]);
 
@@ -97,6 +108,36 @@ const RequestsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [selectedRequest, setSelectedRequest] = useState(null);
+
+
+
+
+  const handleApprove = async () => {
+    
+  }
+
+  const handleReject = async () => {
+
+  }
+
+
+  useEffect(() => {
+    console.log(appointmentRequests);
+  }, [appointmentRequests])
+
+  const fetch = () => {
+    fetchData(
+      () => {
+        return getAppointmentRequests(query)
+      }
+    );
+  }
+
+  useEffect(() => {
+    fetch();
+  }, [])
+
+
 
   const handleOpenMenu = (event, row) => {
     setSelectedRequest(row);
@@ -156,13 +197,16 @@ const RequestsPage = () => {
 
   const isNotFound = !filteredComplaints.length && !!filterName;
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedRequest(null);
+  }
+
   const openModal = () => {
     return(
   <Modal
         open={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
+        onClose={closeModal}
       >
         <Container
           sx={{
@@ -224,7 +268,7 @@ const RequestsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#F86D6D' }}
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={handleReject}
                     className={classes.control}
                   >
                     Reject
@@ -235,7 +279,7 @@ const RequestsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#6DD17F' }}
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={handleApprove}
                     className={classes.control}
                   >
                     Approve
@@ -249,6 +293,11 @@ const RequestsPage = () => {
 
 
   };
+
+  
+  if(isLoading) return <Loading message="Loading Communities..."/>
+
+  if(error) return <Error message="Error loading communities" />
 
   return (
     <>

@@ -307,9 +307,9 @@ const RequestsPage = () => {
   };
 
   
-  if(isLoading) return <Loading message="Loading Communities..."/>
+  if(isLoading) return <Loading message="Loading Requests..."/>
 
-  if(error) return <Error message="Error loading communities" />
+  if(error) return <Error message="Error loading requests" />
 
   return (
     <>
@@ -322,7 +322,7 @@ const RequestsPage = () => {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Complaint
+            Appointment Requests
           </Typography>
           {/* <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             New User

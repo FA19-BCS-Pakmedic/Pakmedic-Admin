@@ -39,6 +39,10 @@ import classes from '../styles/ComplaintModal.module.css';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 import COMPLAINTS from '../_mock/complaint';
+import { useApi } from '../hooks/useApi';
+import { baseUrl, getComplaints, updateComplaint } from '../utils/api';
+import Loading from '../components/loading/Loading';
+import Error from '../components/error/Error';
 
 const TABLE_HEAD = [
   { id: 'complainee', label: 'Complainee Name', alignRight: false },
@@ -72,7 +76,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.complaineeName.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.complainee.name.toLowerCase().includes(query.toLowerCase()));
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -86,7 +90,7 @@ const ComplaintsPage = () => {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('complaineeName');
+  const [orderBy, setOrderBy] = useState('');
 
   const [filterName, setFilterName] = useState('');
 
@@ -95,6 +99,45 @@ const ComplaintsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [selectedComplaint, setSelectedComplaint] = useState(null);
+
+  const [COMPLAINTS, setCOMPLAINTS] = useState([]);
+
+  const [review, setReview] = useState('');
+
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+
+  const {
+    data: complaints,
+    error,
+    isLoading,
+    refetch: fetchData
+  } = useApi();
+
+
+  const fetch = () => {
+    fetchData(
+      () => {
+        return getComplaints()
+      }
+    );
+  }
+
+  const onUpdateComplaint = async (status) => {
+    setIsBtnLoading(true);
+    try {
+      const res = await updateComplaint(selectedComplaint._id, { status, review });
+
+      setIsModalOpen(false);
+      fetch();
+
+    }catch(err) {
+      console.log(err);
+    }finally {
+      setIsBtnLoading(false);
+    }
+
+  }
+
 
   const handleOpenMenu = (event, row) => {
     setSelectedComplaint(row);
@@ -110,29 +153,23 @@ const ComplaintsPage = () => {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = COMPLAINTS.map((n) => n.complaineeName);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
 
-  // const handleClick = (event, complaineeName) => {
-  //   const selectedIndex = selected.indexOf(complaineeName);
-  //   let newSelected = [];
-  //   if (selectedIndex === -1) {
-  //     newSelected = newSelected.concat(selected, complaineeName);
-  //   } else if (selectedIndex === 0) {
-  //     newSelected = newSelected.concat(selected.slice(1));
-  //   } else if (selectedIndex === selected.length - 1) {
-  //     newSelected = newSelected.concat(selected.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-  //   }
-  //   setSelected(newSelected);
-  // };
+  useEffect(() => {
+    if(selectedComplaint)
+      setReview(selectedComplaint?.review);
+  }, [selectedComplaint])
+
+  useEffect(() => {
+    console.log(complaints);
+    if(complaints && complaints.status === 'success') {
+      setCOMPLAINTS(complaints.data.data);
+    }
+  }, [complaints])
+
+  useEffect(() => {
+    fetch();
+  }, []);
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -155,7 +192,6 @@ const ComplaintsPage = () => {
   const isNotFound = !filteredComplaints.length && !!filterName;
 
   const openModal = () => {
-    console.log(selectedComplaint);
 
     return (
       <Modal
@@ -201,21 +237,23 @@ const ComplaintsPage = () => {
                   {selectedComplaint?.status}
                 </Label>
               </div>
-              <Typography variant="p">{selectedComplaint?.title}</Typography>
+              <Typography variant="p">{selectedComplaint?.subject}</Typography>
             </Container>
 
             <Container sx={{ mt: 2 }}>
               <Typography variant="h6">Description</Typography>
-              <Typography variant="p">{selectedComplaint?.description}</Typography>
+              <Typography variant="p">{selectedComplaint?.complaint}</Typography>
             </Container>
 
             <Container sx={{ mt: 2 }}>
               <Typography variant="h6">Complainee</Typography>
               <div className={classes.complaineeInfoContainer}>
-                <Avatar sx={{ width: 100, height: 100 }} src="/assets/images/avatars/avatar_1.jpg" />
+                <Avatar sx={{ width: 100, height: 100 }} src={
+                  `${baseUrl}files/${selectedComplaint?.complainee?.avatar}`
+                } />
                 <div className={classes.complaineeInfo}>
-                  <Typography variant="p">{selectedComplaint?.complaineeName}</Typography>
-                  <Typography variant="p">test@gmail.com</Typography>
+                  <Typography variant="p">{selectedComplaint?.complainee?.name}</Typography>
+                  <Typography variant="p">{selectedComplaint?.complainee?.email}</Typography>
                 </div>
               </div>
             </Container>
@@ -228,6 +266,10 @@ const ComplaintsPage = () => {
                 minRows={3}
                 placeholder="Add your review here"
                 className={classes.reviewInput}
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                contentEditable={selectedComplaint?.status !== 'Resolved'}
+                disabled={selectedComplaint?.status === 'Resolved'}
               />
             </Container>
 
@@ -238,8 +280,9 @@ const ComplaintsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#F86D6D' }}
-                    onClick={() => setIsModalOpen(false)}
                     className={classes.control}
+                    disabled={selectedComplaint?.status === 'Resolved'}
+                    onClick={() => {onUpdateComplaint('On Hold')}}
                   >
                     Set on hold
                   </Button>
@@ -249,8 +292,9 @@ const ComplaintsPage = () => {
                   <Button
                     variant="contained"
                     style={{ background: '#6DD17F' }}
-                    onClick={() => setIsModalOpen(false)}
                     className={classes.control}
+                    disabled={selectedComplaint?.status === 'Resolved'}
+                    onClick={() => {onUpdateComplaint('Resolved')}}
                   >
                     Resolve
                   </Button>
@@ -262,6 +306,10 @@ const ComplaintsPage = () => {
       </Modal>
     );
   };
+
+  if(isLoading) return <Loading message="Loading Requests..."/>
+
+  if(error) return <Error message="Error loading requests" />
 
   return (
     <>
@@ -297,11 +345,11 @@ const ComplaintsPage = () => {
                 />
                 <TableBody>
                   {filteredComplaints.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, complaineeName, role, status, complainantName, title } = row;
-                    const selectedUser = selected.indexOf(complaineeName) !== -1;
-
+                    const { id, complainee, status, complainant, subject, complaineeType } = row;
+                    // const selectedUser = selected.indexOf(complaineeName) !== -1;
+                    console.log(complainee, complainant);
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox">
                         <TableCell padding="checkbox">
                           {/* <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, complaineeName)} /> */}
                         </TableCell>
@@ -310,19 +358,30 @@ const ComplaintsPage = () => {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             {/* <Avatar alt={complaineeName} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {complaineeName}
+                              {complainee?.name}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{role}</TableCell>
+                        <TableCell align="left">{complaineeType}</TableCell>
 
-                        <TableCell align="left">{complainantName}</TableCell>
+                        <TableCell align="left">{complainant?.name}</TableCell>
 
-                        <TableCell align="left">{title}</TableCell>
+                        <TableCell align="left">{subject}</TableCell>
 
                         <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
+                          <Label style={{
+                    backgroundColor: `
+                    ${
+                      status === 'On Hold'
+                        ? '#F86D6D'
+                        : status === 'Resolved'
+                        ? '#6DD17F'
+                        : '#F8B76D'
+                    }
+                    `,
+                    color: '#fff',
+                  }}>{sentenceCase(status)}</Label>
                         </TableCell>
 
                         <TableCell align="right">

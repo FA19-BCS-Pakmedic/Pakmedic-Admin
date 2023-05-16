@@ -202,9 +202,12 @@ export default function UserPage() {
         onClickConfirm={handleStatusChange}
         isBtnLoading={isBtnLoading}
       />
-      <Helmet>
+      {/* <Helmet
+        
+      >
         <title> User | Minimal UI </title>
-      </Helmet>
+        
+      </Helmet> */}
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -338,15 +341,20 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem onClick={() => {onMenuItemClicked("Warned")}}>
-          <Iconify icon={'eva:warn-fill'} sx={{ mr: 2 }} />
+        <MenuItem onClick={() => {onMenuItemClicked("Warned")}} sx={{color: '#F8B76D'}}>
+          <Iconify icon={'eva:alert-triangle-fill'} sx={{ mr: 2 }} />
           Warn user
         </MenuItem>
 
+{selectedUser.status === "Banned" ? <MenuItem sx={{ color: 'success.main' }} onClick={() => {onMenuItemClicked("Active")}}>
+          <Iconify icon={'eva:checkmark-circle-fill'} sx={{ mr: 2 }} /> 
+          Unban user
+        </MenuItem> :
+      
         <MenuItem sx={{ color: 'error.main' }} onClick={() => {onMenuItemClicked("Banned")}}>
-          <Iconify icon={'eva:cancel-2-outline'} sx={{ mr: 2 }} />
+          <Iconify icon={'eva:close-circle-fill'} sx={{ mr: 2 }} />
           Ban user
-        </MenuItem>
+        </MenuItem>}
       </Popover>
     </>
   );

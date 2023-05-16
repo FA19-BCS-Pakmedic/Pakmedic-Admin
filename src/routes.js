@@ -13,6 +13,7 @@ import UserDetailsPage from './pages/UserDetailsPage';
 import ComplaintsPage from './pages/ComplaintsPage';
 import RequestsPage from './pages/RequestsPage';
 import SupportCommsPage from './pages/SupportCommsPage';
+import DoctorsListPage from './pages/DoctorsListPage';
 
 // ----------------------------------------------------------------------
 
@@ -29,8 +30,9 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'user-details/:id', element: <UserDetailsPage /> },
         { path: 'complaints', element: <ComplaintsPage /> },
-        { path: 'appointment-requests', element: <RequestsPage />},
-        {path: 'support-communities', element: <SupportCommsPage />},
+        { path: 'appointment-requests', element: <RequestsPage /> },
+        { path: 'support-communities', element: <SupportCommsPage /> },
+        { path: 'doctors', element: <DoctorsListPage /> },
       ],
     },
     {

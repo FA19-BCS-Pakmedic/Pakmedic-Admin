@@ -45,6 +45,8 @@ export const getAllUsers = (query) => api.get(`/admin/users/${query ? `?${query}
 
 export const updateUser = (id, data) => api.patch(`/admin/users/${id}`, data);
 
-export const getDoctorData = (id) => api.get(`/admin/doctor-data/${id}`);
+export const getDoctorData = (id) => api.get(`/admin/doctors/${id}`);
+
+export const getAllDoctors = () => api.get(`/admin/doctors`);
 
 

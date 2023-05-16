@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { faker } from '@faker-js/faker';
+import { useNavigate, useNavigation } from 'react-router-dom';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
@@ -26,16 +28,49 @@ import { TopDoctors } from '../utils/dummyData/TopDoctors';
 
 import { DiseasesNames, DiseasesValues } from '../utils/dummyData/Diseases';
 
+import {baseUrl, getDashboardData} from '../utils/api';
+
+import { useApi } from '../hooks/useApi';
+import Loading from '../components/loading/Loading';
+import Error from '../components/error/Error';
+
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
 
+  const navigate = useNavigate();
+
+  const {
+    data,
+    error,
+    isLoading,
+    refetch: fetchData,
+  } = useApi();
+
+  const fetch = () => {
+    fetchData(
+      () => {
+        return getDashboardData();
+      }
+    );
+  }
+
+  useEffect(() => {
+    fetch();
+  }, []);
+
+  if(isLoading) return <Loading message="Loading Statistics..."/>
+
+  if(error) return <Error message="Error loading stats" />
+
+  if(data?.data) {
+
   return (
     <>
-      {/* <Helmet>
+      <Helmet>
           <title> Dashboard | Minimal UI </title>
-        </Helmet> */}
+        </Helmet>
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
@@ -44,43 +79,45 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Doctors" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Total Doctors" total={data.data.totalDoctors} icon={"ant-design:user-outlined"} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Patients" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Total Patients" total={data.data.totalPatients} color="info" icon={'ant-design:user-outlined'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary
               title="Total Booked Appointments"
-              total={1723315}
+              total={data.data.totalAppointments}
               color="warning"
-              icon={'ant-design:windows-filled'}
+              icon={'ant-design:calendar-filled'}
             />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Complaints" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Total Complaints" total={data.data.totalComplaints} color="error" icon={
+              'ant-design:warning-outlined'
+            } />
           </Grid>
 
           <Grid item xs={12} md={12} lg={12}>
             <StatsChart
               title="Appointments Booked"
-              subheader="23 appointments booked this month"
-              chartLabels={AppointmentDate}
+              subheader={`${(data?.data.online[data?.data.physical.length > data?.data.online.length ? data?.data.physical.length-1 : data?.data.online.length-1] || 0) + (data?.data.physical[data?.data.physical.length > data?.data.online.length ? data?.data.physical.length-1 : data?.data.online.length-1] || 0)} appointments booked this month`}
+              chartLabels={data?.data.months}
               chartData={[
                 {
                   name: 'Online Consultations',
                   type: 'bar',
                   fill: 'solid',
-                  data: PhysicalCheckupsCount,
+                  data: data?.data.online,
                 },
                 {
                   name: 'Physical Checkups',
                   type: 'bar',
                   fill: 'gradient',
-                  data: OnlineConsultationsCount,
+                  data: data?.data.physical,
                 },
                 // {
                 //   name: 'Team C',
@@ -92,50 +129,25 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          {/* <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Current Visits"
-              chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ]}
-              chartColors={[
-                theme.palette.primary.main,
-                theme.palette.info.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
-              ]}
-            />
-          </Grid> */}
-
           <Grid item xs={12} md={6} lg={4}>
             <AppConversionRates
               title="Specialities"
-              subheader={`Total Specilities: ${Specialists.length}`}
-              chartData={Specialists}
+              subheader={`Total Specilities: ${data?.data.specialties.length}`}
+              chartData={data?.data.specialties || []}
             />
           </Grid>
 
           <Grid item xs={12} md={8} lg={8}>
             <StatsChart
               title="Top Diseases"
-              chartLabels={DiseasesNames}
+              chartLabels={data?.data.diseases}
               chartData={[
                 {
                   name: 'Count',
                   type: 'line',
-                  fill: 'gradient',
-                  data: DiseasesValues,
+                  fill: 'solid',
+                  data: data?.data.diseasesCount,
                 },
-
-                // {
-                //   name: 'Team C',
-                //   type: 'line',
-                //   fill: 'solid',
-                //   data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                // },
               ]}
             />
           </Grid>
@@ -143,76 +155,23 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={6} lg={12}>
             <UserItem
               title="Most Popular Doctors"
-              list={TopDoctors.map((_, index) => ({
-                id: faker.datatype.uuid(),
+              list={data?.data.topDoctors.map((_, index) => ({
+                id: _._id,
                 title: _.name,
                 description: _.speciality,
-                image: _.avatar,
-                postedAt: faker.date.recent(),
+                image: `${baseUrl}files/${_.avatar}`,
+                pmcId: _.pmc.id,
               }))}
+              isViewAll
+              onClickViewAll={() => {
+                navigate('/dashboard/doctors');
+              }}
             />
           </Grid>
-
-          {/* <Grid item xs={12} md={6} lg={4}>
-            <AppOrderTimeline
-              title="Order Timeline"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: [
-                  '1983, orders, $4220',
-                  '12 Invoices have been paid',
-                  'Order #37745 from September',
-                  'New order placed #XF-2356',
-                  'New order placed #XF-2346',
-                ][index],
-                type: `order${index + 1}`,
-                time: faker.date.past(),
-              }))}
-            />
-          </Grid> */}
-
-          {/* <Grid item xs={12} md={6} lg={4}>
-            <AppTrafficBySite
-              title="Traffic by Site"
-              list={[
-                {
-                  name: 'FaceBook',
-                  value: 323234,
-                  icon: <Iconify icon={'eva:facebook-fill'} color="#1877F2" width={32} />,
-                },
-                {
-                  name: 'Google',
-                  value: 341212,
-                  icon: <Iconify icon={'eva:google-fill'} color="#DF3E30" width={32} />,
-                },
-                {
-                  name: 'Linkedin',
-                  value: 411213,
-                  icon: <Iconify icon={'eva:linkedin-fill'} color="#006097" width={32} />,
-                },
-                {
-                  name: 'Twitter',
-                  value: 443232,
-                  icon: <Iconify icon={'eva:twitter-fill'} color="#1C9CEA" width={32} />,
-                },
-              ]}
-            />
-          </Grid> */}
-
-          {/* <Grid item xs={12} md={6} lg={8}>
-            <AppTasks
-              title="Tasks"
-              list={[
-                { id: '1', label: 'Create FireStone Logo' },
-                { id: '2', label: 'Add SCSS and JS files if required' },
-                { id: '3', label: 'Stakeholder Meeting' },
-                { id: '4', label: 'Scoping & Estimations' },
-                { id: '5', label: 'Sprint Showcase' },
-              ]}
-            />
-          </Grid> */}
         </Grid>
       </Container>
     </>
   );
+}
+
 }

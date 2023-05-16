@@ -169,6 +169,7 @@ const ComplaintsPage = () => {
   useEffect(() => {
     fetch();
   }, []);
+  
 
 
   const handleChangePage = (event, newPage) => {
@@ -190,6 +191,8 @@ const ComplaintsPage = () => {
   const filteredComplaints = applySortFilter(COMPLAINTS, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredComplaints.length && !!filterName;
+
+  console.log(`${baseUrl}files/${selectedComplaint?.complainee?.avatar}`)
 
   const openModal = () => {
 
@@ -307,9 +310,9 @@ const ComplaintsPage = () => {
     );
   };
 
-  if(isLoading) return <Loading message="Loading Requests..."/>
+  if(isLoading) return <Loading message="Loading Complaints..."/>
 
-  if(error) return <Error message="Error loading requests" />
+  if(error) return <Error message="Error loading complaints" />
 
   return (
     <>

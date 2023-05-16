@@ -41,7 +41,9 @@ export const updateComplaint = (id, data) => api.patch(`/complaints/${id}`, data
 
 export const getDashboardData = () => api.get(`/admin/dashboard-stats`);
 
-export const getAllUsers = (query) => api.get(`/admin/all-users/${query ? `?${query}` : ``}`);
+export const getAllUsers = (query) => api.get(`/admin/users/${query ? `?${query}` : ``}`);
+
+export const updateUser = (id, data) => api.patch(`/admin/users/${id}`, data);
 
 export const getDoctorData = (id) => api.get(`/admin/doctor-data/${id}`);
 

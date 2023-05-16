@@ -47,6 +47,7 @@ import Loading from '../components/loading/Loading';
 import Error from '../components/error/Error';
 
 
+
 const TABLE_HEAD = [
   { id: 'author', label: 'Requested By', alignRight: false },
   { id: 'type', label: 'Type', alignRight: false },
@@ -54,6 +55,7 @@ const TABLE_HEAD = [
   { id: 'time', label: 'Selected Time', alignRight: false },
   { id: 'date', label: 'Selected Date', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
+
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -114,6 +116,8 @@ const RequestsPage = () => {
   const [REQUESTS, setREQUESTS] = useState([]);
 
   const [isBtnLoading, setIsBtnLoading] = useState(false);
+
+
 
 
   const handleUpdate = async (isApproved, isRejected) => {
@@ -313,6 +317,8 @@ const RequestsPage = () => {
 
   return (
     <>
+
+
       <Helmet>
         <title> User | Minimal UI </title>
       </Helmet>

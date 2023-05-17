@@ -2,7 +2,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
-//
+// pages
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
@@ -14,6 +14,8 @@ import ComplaintsPage from './pages/ComplaintsPage';
 import RequestsPage from './pages/RequestsPage';
 import SupportCommsPage from './pages/SupportCommsPage';
 import DoctorsListPage from './pages/DoctorsListPage';
+
+import ProtectedRoutes from './routes/ProtectedRoutes';
 
 // ----------------------------------------------------------------------
 

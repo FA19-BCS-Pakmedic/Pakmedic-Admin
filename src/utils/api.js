@@ -3,6 +3,8 @@ import axios from 'axios';
 
 export const baseUrl = 'http://localhost:8000/api/v1/';
 
+const token = localStorage.getItem('jwt');
+
 const api = axios.create({
     baseURL: baseUrl,
     "access-control-allow-origin": "*",
@@ -11,6 +13,8 @@ const api = axios.create({
     "Content-Type": "application/json",
     "Access-Control-Allow-Credentials": true,
     "Access-Control-Allow-Origin": "*",
+    authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
 });
 
 
@@ -48,5 +52,9 @@ export const updateUser = (id, data) => api.patch(`/admin/users/${id}`, data);
 export const getDoctorData = (id) => api.get(`/admin/doctors/${id}`);
 
 export const getAllDoctors = () => api.get(`/admin/doctors`);
+
+export const loginAdmin = (data) => api.post(`/admin/login`, data);
+
+export const getLoggedInAdmin = () => api.get(`/admin`);
 
 

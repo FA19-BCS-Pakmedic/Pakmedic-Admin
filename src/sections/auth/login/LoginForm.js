@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
@@ -9,6 +9,8 @@ import Iconify from '../../../components/iconify';
 import {
   loginAdmin
 } from '../../../utils/api';
+
+import { UserContext } from '../../../context/UserContext';
 
 // ----------------------------------------------------------------------
 
@@ -21,30 +23,23 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const {updateUserContext} = useContext(UserContext);
 
   const handleClick = async() => {
-
     setIsBtnLoading(true);
-
     try {
       const data = {email, password};
-
       const response = await loginAdmin(data);
-
-      console.log(response);
-
-
-
+      if(response.status === 200){
+        localStorage.setItem('jwt', response.data.token);
+        updateUserContext(response.data.user);
+      }
+      navigate('/dashboard/app', { replace: true });
     }catch(err) {
-
       setError(err.response.data.message);
-
     }finally {
       setIsBtnLoading(false);
     }
-  
-
-    navigate('/dashboard', { replace: true });
   };
 
   return (

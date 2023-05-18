@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 // routes
@@ -8,15 +8,18 @@ import ThemeProvider from './theme';
 // components
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
-import {UserProvider} from './context/UserContext';
+import {UserContext} from './context/UserContext';
 import { useApi } from './hooks/useApi';
 import { getLoggedInAdmin } from './utils/api'
+import Loading from './components/loading/Loading';
 
 // ----------------------------------------------------------------------
 
 export default function App() {
 
   const {data, error, isLoading, refetch: fetchData} = useApi();
+
+  const {updateUserContext, isAuthenticated} = useContext(UserContext);
 
   const fetch = () => {
     fetchData(
@@ -30,11 +33,16 @@ export default function App() {
 
   useEffect(() => {
     if(data && data.status === 'success'){
-      console.log(data);
+      const user = data.data.user;
+      updateUserContext(user);
     }else {
       console.log(data, error);
     }
   }, [data]);
+
+  if(isLoading) {
+    return <div style={{height: '100vh'}}><Loading message={"Loading User Data...."} /></div>
+  }
 
   return (
     <HelmetProvider>
@@ -42,7 +50,7 @@ export default function App() {
           <ThemeProvider>
             <ScrollToTop />
             <StyledChart />
-            <Router />
+            <Router isAuthenticated={isAuthenticated}/>
           </ThemeProvider>
         </BrowserRouter>
     </HelmetProvider>

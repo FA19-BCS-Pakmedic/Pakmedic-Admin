@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useContext, useState } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 //
 import Header from './header';
 import Nav from './nav';
+import { UserContext } from '../../context/UserContext';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,11 @@ const Main = styled('div')(({ theme }) => ({
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
+  const {isAuthenticated} = useContext(UserContext);
+
+
+
+
   return (
     <StyledRoot>
       <Header onOpenNav={() => setOpen(true)} />
@@ -42,7 +48,7 @@ export default function DashboardLayout() {
       <Nav openNav={open} onCloseNav={() => setOpen(false)} />
 
       <Main>
-        <Outlet />
+        {isAuthenticated ? <Outlet /> : <Navigate to="/login" />}
       </Main>
     </StyledRoot>
   );

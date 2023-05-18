@@ -4,26 +4,24 @@ import React, { createContext, useState } from 'react';
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [id, setId] = useState('');
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const updateUserContext = (user) => {
-    setName(user.name);
-    setEmail(user.email);
-    setId(user.id);
+    if(user){
+      setUser(user);
+      setIsAuthenticated(true);
+    }
   };
 
   const clearUserContext = () => {
-    setName('');
-    setEmail('');
-    setId('');
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   const userContextValue = {
-    name,
-    email,
-    id,
+    user,
+    isAuthenticated,
     updateUserContext,
     clearUserContext,
   };

@@ -1,4 +1,6 @@
+import { useContext, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Link, Container, Typography, Divider, Stack, Button } from '@mui/material';
@@ -9,6 +11,7 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+import { UserContext } from '../context/UserContext';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +45,17 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
+
+  const {isAuthenticated} = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate('/dashboard/app', { replace: true });
+    }
+  }, [isAuthenticated]);
+
 
   return (
     <>

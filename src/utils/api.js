@@ -13,9 +13,10 @@ const api = axios.create({
     "Content-Type": "application/json",
     "Access-Control-Allow-Credentials": true,
     "Access-Control-Allow-Origin": "*",
-    authorization: `Bearer ${token}`,
-    Authorization: `Bearer ${token}`,
 });
+
+if(token)
+    api.defaults.headers.common.authorization = `Bearer ${token}`;
 
 
 export const getCommunities = (query) => api.get(`communities${query ? `?${query}` : ``}`);

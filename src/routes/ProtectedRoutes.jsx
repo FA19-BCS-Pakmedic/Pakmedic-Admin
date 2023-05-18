@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 
-const ProtectedRoutes = ({ component: Component, isAuthenticated, ...rest }) => {
+const ProtectedRoutes = ({ element, isAuthenticated, ...rest }) => {
   return (
     <Route
       {...rest}
       render={(props) =>
         isAuthenticated ? (
-          <Component {...props} />
+          element
         ) : (
           <Navigate to="/login" />
         )

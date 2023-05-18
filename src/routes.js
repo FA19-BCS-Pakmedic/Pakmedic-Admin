@@ -19,7 +19,7 @@ import ProtectedRoutes from './routes/ProtectedRoutes';
 
 // ----------------------------------------------------------------------
 
-export default function Router() {
+export default function Router({isAuthenticated}) {
   const routes = useRoutes([
     {
       path: '/dashboard',

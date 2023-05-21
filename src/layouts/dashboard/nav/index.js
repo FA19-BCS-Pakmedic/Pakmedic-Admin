@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
@@ -13,7 +13,7 @@ import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
-import navConfig from './config';
+import getNavConfig from './config';
 import { UserContext } from '../../../context/UserContext';
 import { baseUrl } from '../../../utils/api';
 
@@ -64,22 +64,22 @@ export default function  Nav({ openNav, onCloseNav }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={`${baseUrl}files/${user.avatar}`} alt="photoURL" />
+            <Avatar src={`${baseUrl}files/${user?.avatar}`} alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {user.name}
+                {user?.name}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {user.role}
+                {user?.role}
               </Typography>
             </Box>
           </StyledAccount>
         </Link>
       </Box>
 
-      <NavSection data={navConfig} />
+      <NavSection data={getNavConfig()} />
 
       <Box sx={{ flexGrow: 1 }} />
     </Scrollbar>

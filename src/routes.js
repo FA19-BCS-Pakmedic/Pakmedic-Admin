@@ -14,6 +14,7 @@ import ComplaintsPage from './pages/ComplaintsPage';
 import RequestsPage from './pages/RequestsPage';
 import SupportCommsPage from './pages/SupportCommsPage';
 import DoctorsListPage from './pages/DoctorsListPage';
+import BertPage from './pages/BertPage';
 
 import ProtectedRoutes from './routes/ProtectedRoutes';
 
@@ -35,6 +36,7 @@ export default function Router({isAuthenticated}) {
         { path: 'appointment-requests', element: <RequestsPage /> },
         { path: 'support-communities', element: <SupportCommsPage /> },
         { path: 'doctors', element: <DoctorsListPage /> },
+        { path: 'bert', element: <BertPage />},
       ],
     },
     {

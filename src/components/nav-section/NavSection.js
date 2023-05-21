@@ -30,7 +30,10 @@ NavItem.propTypes = {
 };
 
 function NavItem({ item }) {
-  const { title, path, icon, info } = item;
+  const { title, path, icon, info, count } = item;
+  
+
+
 
   return (
     <StyledNavItem
@@ -42,13 +45,13 @@ function NavItem({ item }) {
           bgcolor: 'action.selected',
           fontWeight: 'fontWeightBold',
         },
+        position: 'relative'
       }}
     >
       <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
 
       <ListItemText disableTypography primary={title} />
-
-      {info && info}
+ 
     </StyledNavItem>
   );
 }

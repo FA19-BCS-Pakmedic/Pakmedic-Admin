@@ -58,4 +58,6 @@ export const loginAdmin = (data) => api.post(`/admin/login`, data);
 
 export const getLoggedInAdmin = () => api.get(`/admin`);
 
+export const getUnresolvedData = () => api.get(`/admin/unresolved-data`);
+
 

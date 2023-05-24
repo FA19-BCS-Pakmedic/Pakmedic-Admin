@@ -7,6 +7,7 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/iconify';
 
 import {
+  api,
   loginAdmin
 } from '../../../utils/api';
 
@@ -32,6 +33,7 @@ export default function LoginForm() {
       const response = await loginAdmin(data);
       if(response.status === 200){
         localStorage.setItem('jwt', response.data.token);
+        api.defaults.headers.common.authorization = `Bearer ${response.data.token}`;
         updateUserContext(response.data.user);
       }
       navigate('/dashboard/app', { replace: true });

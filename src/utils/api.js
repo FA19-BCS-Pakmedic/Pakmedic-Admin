@@ -5,7 +5,7 @@ export const baseUrl = 'http://localhost:8000/api/v1/';
 
 const token = localStorage.getItem('jwt');
 
-const api = axios.create({
+export const api = axios.create({
     baseURL: baseUrl,
     "access-control-allow-origin": "*",
     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
@@ -17,7 +17,6 @@ const api = axios.create({
 
 if(token)
     api.defaults.headers.common.authorization = `Bearer ${token}`;
-
 
 export const getCommunities = (query) => api.get(`communities${query ? `?${query}` : ``}`);
 

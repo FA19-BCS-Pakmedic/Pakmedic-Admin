@@ -17,6 +17,8 @@ const UserDetailsPage = () => {
 
   const id = useParams().id;
 
+  console.log("HERE");
+
   const {
     data,
     isLoading,

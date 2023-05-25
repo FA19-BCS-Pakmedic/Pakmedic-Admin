@@ -1,5 +1,6 @@
 // @mui
 import PropTypes from 'prop-types';
+import {useNavigate} from 'react-router-dom'
 import { Box, Stack, Link, Card, Button, Divider, Typography, CardHeader, Avatar } from '@mui/material';
 // utils
 import { fToNow } from '../../../utils/formatTime';
@@ -56,14 +57,21 @@ NewsItem.propTypes = {
 function NewsItem({ news }) {
   const { image, title, description, pmcId, id } = news;
 
+  const navigate = useNavigate();
+
+
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
       {/* <Box component="img" alt={title} src={image} sx={{ width: 48, height: 48, borderRadius: 1.5, flexShrink: 0 }} /> */}
       <Avatar src={image} alt={title} style={{ width: 48, height: 48, borderRadius: 100, flexShrink: 0 }} />
       <Box sx={{ minWidth: 240, flexGrow: 1 }}>
-        <Link color="inherit" variant="subtitle2" underline="hover" noWrap href={`user-details/${id}`}>
+        <Button color="inherit" sx={{border: 'none', background: '#fff', padding: 0}} noWrap onClick={
+          () => {
+            navigate(`/dashboard/user-details/${id}`)
+          }
+        }>
           {title}
-        </Link>
+        </Button>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
           {description}

@@ -28,7 +28,7 @@ const StyledSection = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   boxShadow: theme.customShadows.card,
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: '#fff',
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
@@ -46,16 +46,15 @@ const StyledContent = styled('div')(({ theme }) => ({
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
 
-  const {isAuthenticated} = useContext(UserContext);
+  const { isAuthenticated } = useContext(UserContext);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(isAuthenticated){
+    if (isAuthenticated) {
       navigate('/dashboard/app', { replace: true });
     }
   }, [isAuthenticated]);
-
 
   return (
     <>
@@ -86,7 +85,6 @@ export default function LoginPage() {
             <Typography variant="h4" gutterBottom>
               Sign in to Pakmedic Admin Portal
             </Typography>
-
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
